@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Bidding</title>
+</head>
+<body>
+    <h1>Task Bidding</h1>
+
+    <!-- Task Poster View -->
+    <div id="posterView">
+        <h2>Live Bids</h2>
+        <ul id="bids"></ul>
+    </div>
+
+    <!-- Freelancer View -->
+    <div id="freelancerView">
+        <h2>Place a Bid</h2>
+        <textarea id="bidMessage" placeholder="Enter your bid"></textarea>
+        <button id="placeBid">Place Bid</button>
+    </div>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8080/bids');
+
+        // Listen for messages
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            const bidsList = document.getElementById('bids');
+            const li = document.createElement('li');
+            li.textContent = `${data.freelancer}: ${data.bid}`;
+            bidsList.appendChild(li);
+        };
+
+        // Place a bid
+        document.getElementById('placeBid').addEventListener('click', () => {
+            const bidMessage = document.getElementById('bidMessage').value;
+            const freelancer = "Freelancer123"; // Replace with authenticated freelancer's name
+            ws.send(JSON.stringify({ freelancer, bid: bidMessage }));
+        });
+    </script>
+</body>
+</html>
